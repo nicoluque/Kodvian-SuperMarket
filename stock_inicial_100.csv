@@ -1,0 +1,101 @@
+barcode,quickCode,productName,vendibleQty,reclamoQty,mermaQty
+,P001,Leche entera 1L,80,0,0
+,P002,Leche descremada 1L,80,0,0
+,P003,Yogur bebible frutilla 1L,60,0,0
+,P004,Yogur bebible vainilla 1L,60,0,0
+,P005,Queso rallado 40g,50,0,0
+,P006,Manteca 200g,45,0,0
+,P007,Crema de leche 200cc,45,0,0
+,P008,Pan lactal grande,70,0,0
+,P009,Pan de hamburguesa x4,55,0,0
+,P010,Pan de panchos x6,55,0,0
+,P011,Huevos docena,40,0,0
+,P012,Dulce de leche 400g,45,0,0
+,P013,Mermelada durazno 454g,45,0,0
+,P014,Mermelada frutilla 454g,45,0,0
+,P015,Queso cremoso,30,0,0
+,P016,Arroz largo fino 1kg,70,0,0
+,P017,Arroz integral 1kg,50,0,0
+,P018,Fideos spaghetti 500g,80,0,0
+,P019,Fideos tirabuzon 500g,80,0,0
+,P020,Pure de tomate 520g,90,0,0
+,P021,Salsa fileto 340g,65,0,0
+,P022,Aceite girasol 900ml,50,0,0
+,P023,Aceite mezcla 900ml,50,0,0
+,P024,Harina 000 1kg,70,0,0
+,P025,Harina leudante 1kg,55,0,0
+,P026,Azucar 1kg,70,0,0
+,P027,Sal fina 500g,50,0,0
+,P028,Yerba mate 1kg,45,0,0
+,P029,Cafe instantaneo 170g,30,0,0
+,P030,Te en saquitos x25,40,0,0
+,P031,Agua sin gas 2.25L,120,0,0
+,P032,Agua con gas 2.25L,90,0,0
+,P033,Gaseosa cola 2.25L,110,0,0
+,P034,Gaseosa lima limon 2.25L,90,0,0
+,P035,Gaseosa naranja 2.25L,90,0,0
+,P036,Jugo en caja 1L naranja,70,0,0
+,P037,Jugo en caja 1L multifruta,70,0,0
+,P038,Soda 1.5L,90,0,0
+,P039,Cerveza lata 473ml rubia,140,0,0
+,P040,Cerveza lata 473ml roja,120,0,0
+,P041,Vino tinto tetra 1L,60,0,0
+,P042,Vino blanco tetra 1L,50,0,0
+,P043,Bebida energetica 473ml,80,0,0
+,P044,Agua saborizada 1.5L,75,0,0
+,P045,Isotonica 500ml,70,0,0
+,P046,Galletitas dulces surtidas 300g,85,0,0
+,P047,Galletitas crackers 250g,85,0,0
+,P048,Alfajor simple chocolate,200,0,0
+,P049,Alfajor triple chocolate,150,0,0
+,P050,Chocolate en barra 100g,90,0,0
+,P051,Caramelos surtidos 100g,130,0,0
+,P052,Chicles x7,140,0,0
+,P053,Papas fritas clasicas 150g,80,0,0
+,P054,Papas fritas saborizadas 150g,75,0,0
+,P055,Mani salado 120g,70,0,0
+,P056,Detergente 500ml,65,0,0
+,P057,Lavandina 1L,70,0,0
+,P058,Limpiador liquido 900ml,60,0,0
+,P059,Desinfectante aerosol 360cc,40,0,0
+,P060,Esponja doble uso,90,0,0
+,P061,Jabon en polvo 800g,55,0,0
+,P062,Suavizante 900ml,50,0,0
+,P063,Papel higienico x4,80,0,0
+,P064,Rollo cocina x3,70,0,0
+,P065,Servilletas x100,80,0,0
+,P066,Shampoo 400ml,50,0,0
+,P067,Acondicionador 400ml,50,0,0
+,P068,Jabon tocador 3x90g,60,0,0
+,P069,Pasta dental 90g,70,0,0
+,P070,Desodorante aerosol 150ml,55,0,0
+,P071,Afeitadora descartable x2,45,0,0
+,P072,Algodon 100g,50,0,0
+,P073,Toallitas femeninas x8,60,0,0
+,P074,Panal talle G x8,50,0,0
+,P075,Alcohol en gel 250ml,70,0,0
+,P076,Banana,40,0,0
+,P077,Manzana roja,40,0,0
+,P078,Naranja,45,0,0
+,P079,Tomate redondo,35,0,0
+,P080,Papa negra,70,0,0
+,P081,Cebolla,60,0,0
+,P082,Pollo entero,35,0,0
+,P083,Carne picada comun,30,0,0
+,P084,Milanesa de nalga,30,0,0
+,P085,Jamon cocido fetas,25,0,0
+,P086,Cigarrillos caja 20 clasica,120,0,0
+,P087,Cigarrillos caja 20 suave,120,0,0
+,P088,Cigarrillos caja 20 mentolado,100,0,0
+,P089,Tabaco armado 30g,70,0,0
+,P090,Filtros para armado x120,60,0,0
+,P091,Papel para armado x50,60,0,0
+,P092,Encendedor comun,100,0,0
+,P093,Pilas AA x2,55,0,0
+,P094,Pilas AAA x2,55,0,0
+,P095,Lampara LED 9W,40,0,0
+,P096,Alimento perro 3kg,35,0,0
+,P097,Alimento gato 3kg,35,0,0
+,P098,Arena sanitaria 5kg,35,0,0
+,P099,Bolsa residuos 45x60 x20,50,0,0
+,P100,Repelente aerosol 165ml,40,0,0

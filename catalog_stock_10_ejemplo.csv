@@ -1,0 +1,11 @@
+name,barcode,quickCode,saleType,unitName,price,pricePerKg,allowsManualPrice,isCigarette,vendibleQty,reclamoQty,mermaQty
+Arroz Largo Fino 1kg,7799001000011,ARZ001,Unit,kg,1850,0,false,false,24,0,0
+Azucar Blanca 1kg,7799001000012,AZU001,Unit,kg,1320,0,false,false,18,0,0
+Yerba Mate Suave 1kg,7799001000013,YER001,Unit,kg,2990,0,false,false,15,0,0
+Leche Entera 1L,7799001000014,LEC001,Unit,l,1450,0,false,false,20,1,0
+Aceite Girasol 900ml,7799001000015,ACE001,Unit,l,2400,0,false,false,12,0,0
+Queso Cremoso (peso),7799001000016,QUE001,Weight,kg,0,8950,false,false,8,0,0
+Pan Rallado 500g,7799001000017,PAN001,Unit,unidad,1190,0,false,false,14,0,0
+Galletitas Clasicas 120g,7799001000018,GAL001,Package,pack,980,0,false,false,30,0,1
+Cigarrillos Box 20,7799001000019,CIG001,Package,pack,2750,0,false,true,10,0,0
+Detergente Limon 750ml,7799001000020,DET001,Unit,l,1680,0,false,false,16,0,0

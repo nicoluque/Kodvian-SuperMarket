@@ -1,0 +1,137 @@
+# Reglas de Desarrollo - Kodvian Supermarket
+
+## Contexto del negocio
+
+**Al trabajar en este repositorio, revisar el archivo `AGENT.md` en la raiz del proyecto.** Contiene el spec funcional del ERP: alcance, modulos, funcionalidades y reglas de negocio implementadas. Tenerlo en cuenta evita asumir comportamientos que ya estan definidos y asegura que los cambios respeten las reglas existentes.
+
+## Comunicación y Colaboración
+
+### Principio Fundamental
+**Siempre clarificar comportamientos y funcionalidades antes de implementar.**
+
+### Reglas de Comunicación
+
+1. **Preguntar antes de asumir**
+   - Antes de implementar una funcionalidad, hacer preguntas clarificadoras sobre:
+     - Comportamientos esperados en casos edge
+     - Preferencias del usuario sobre diferentes opciones
+     - Casos de uso específicos
+     - Manejo de duplicados, conflictos o situaciones especiales
+
+2. **Presentar opciones cuando sea apropiado**
+   - Cuando hay múltiples formas de implementar algo, presentar opciones claras
+   - Explicar pros y contras de cada opción
+   - Esperar confirmación antes de proceder
+
+3. **Documentar decisiones**
+   - Cuando se toman decisiones sobre comportamientos, documentarlas en el código con comentarios
+   - Explicar el "por qué" detrás de decisiones no obvias
+
+4. **Confirmar antes de cambios grandes**
+   - Para cambios significativos, resumir el plan antes de implementar
+   - Asegurar que el usuario entiende las implicaciones
+
+## Código Limpio
+
+### Principios
+
+1. **Nombres descriptivos**
+   - Variables, funciones y clases deben tener nombres que expliquen su propósito
+   - Evitar abreviaciones innecesarias
+   - Usar nombres en inglés para código, comentarios en español cuando sea necesario para claridad
+
+2. **Funciones pequeñas y enfocadas**
+   - Cada función debe hacer una cosa y hacerla bien
+   - Si una función hace múltiples cosas, dividirla
+
+3. **DRY (Don't Repeat Yourself)**
+   - Evitar duplicación de código
+   - Extraer lógica común a funciones reutilizables
+
+4. **Comentarios útiles**
+   - Comentar el "por qué", no el "qué"
+   - El código debe ser autoexplicativo
+   - Usar comentarios para explicar decisiones de negocio o lógica compleja
+
+5. **Manejo de errores**
+   - Manejar errores de forma explícita
+   - Proporcionar mensajes de error útiles
+   - No silenciar errores sin razón
+
+6. **Consistencia**
+   - Seguir los patrones establecidos en el proyecto
+   - Mantener estilo consistente en todo el código
+
+### Estándares Específicos
+
+- **Backend (C#)**: Seguir convenciones de C# y .NET
+- **Frontend (TypeScript/Angular)**: Seguir las guías de estilo de Angular
+- **Base de datos**: Usar migraciones para todos los cambios de esquema
+- **APIs**: Mantener DTOs separados de entidades de dominio
+
+## Migraciones (EF Core + PostgreSQL)
+
+**Cada migración en este proyecto tiene dos archivos.** Si falta el Designer, `dotnet ef database update` no aplicará la migración.
+
+### Paso a paso recomendado (crear migración nueva)
+
+1. **Modificar el modelo**  
+   Editar entidades en `ERP.Domain` y/o configuración en `ERPDbContext` (índices, relaciones).
+
+2. **Generar la migración con EF** (recomendado)  
+   Desde la raíz del repo:
+   ```bash
+   cd backend
+   dotnet ef migrations add NombreDescriptivo --project ERP.Infrastructure --startup-project ERP.WebApi
+   ```
+   Esto crea **dos archivos** en `ERP.Infrastructure/Migrations/`:
+   - `YYYYMMDDHHMMSS_NombreDescriptivo.cs` — métodos `Up()` y `Down()`.
+   - `YYYYMMDDHHMMSS_NombreDescriptivo.Designer.cs` — atributo `[Migration("...")]` y `BuildTargetModel()`.
+
+3. **Si necesitás SQL custom** (ej. índice único parcial en PostgreSQL):  
+   Editar solo el `.cs` de la migración: reemplazar o complementar con `migrationBuilder.Sql("...")` en `Up()` y el `DROP` correspondiente en `Down()`. No tocar el Designer.
+
+4. **Si el Designer da error** tipo *"Navigation 'X.Y' was not found"*:  
+   En el `.Designer.cs`, quitar la línea `b.Navigation("NombreNavegacion")` del lado de la entidad que falla. La relación ya está definida desde la otra entidad con `WithMany("NombreNavegacion")`.
+
+5. **Aplicar la migración**  
+   ```bash
+   dotnet ef database update --project ERP.Infrastructure --startup-project ERP.WebApi
+   ```
+
+### Si creás la migración a mano (evitar si es posible)
+
+- **No crear solo el `.cs`.** EF identifica la migración por el `.Designer.cs` (atributo `[Migration("Id")]`). Sin Designer, la migración no se aplica.
+- Para el Designer: copiar `ERPDbContextModelSnapshot.cs` a `YYYYMMDDHHMMSS_NombreMigracion.Designer.cs`, luego:
+  - Añadir `using Microsoft.EntityFrameworkCore.Migrations;`
+  - Añadir `[Migration("YYYYMMDDHHMMSS_NombreMigracion")]`
+  - Cambiar la clase a `partial class NombreMigracion : Migration`
+  - Cambiar `BuildModel` por `BuildTargetModel`
+- Si al aplicar falla por una navegación: en el Designer, eliminar el `b.Navigation("...")` redundante del lado que indique el error.
+
+### Resumen
+
+- Siempre usar `dotnet ef migrations add` para que se generen ambos archivos.
+- Cada migración = un `.cs` (Up/Down) + un `.Designer.cs` (id + target model).
+- Para índices con filtro (ej. único donde no null), usar `migrationBuilder.Sql()` en el `.cs`.
+
+## Tests - Backend
+
+**Cada cambio o implementación nueva en el backend debe ir acompañado de su test.**
+
+- Al agregar o modificar un **controller**: añadir o actualizar tests en `ERP.WebApi.Tests/Controllers/` (mismo nombre + sufijo `Tests`).
+- Al agregar o modificar un **servicio** (Infrastructure): añadir o actualizar tests en `ERP.Infrastructure.UnitTests/Services/`.
+- Al agregar o modificar **lógica en Application** (validadores, reglas): añadir o actualizar tests en `ERP.Application.UnitTests/`.
+- Los tests deben cubrir al menos el comportamiento nuevo o modificado (casos felices y errores relevantes).
+- Ejecutar `./run-tests.sh` antes de dar por cerrado un cambio para asegurar que todo pasa.
+
+## Flujo de Trabajo
+
+1. **Entender el requerimiento completamente**
+2. **Preguntar sobre casos edge y comportamientos**
+3. **Presentar opciones si hay múltiples enfoques**
+4. **Implementar con código limpio**
+5. **Añadir o actualizar tests** que cubran el cambio (ver sección Tests - Backend)
+6. **Probar casos edge mencionados**
+7. **Documentar decisiones importantes**
+
