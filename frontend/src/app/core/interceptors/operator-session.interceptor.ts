@@ -7,7 +7,13 @@ export const operatorSessionInterceptor: HttpInterceptorFn = (req, next) => {
   if (!req.url.includes('/api/')) return next(req);
 
   const path = typeof window !== 'undefined' ? window.location.pathname : '';
+  if (!path.startsWith('/pos/')) return next(req);
   if (path.startsWith('/bo/')) return next(req);
+  if (path.startsWith('/pos/setup')) return next(req);
+
+  if (req.url.includes('/api/v1/admin/')) return next(req);
+  if (req.url.includes('/api/v1/health')) return next(req);
+  if (req.url.includes('/api/v1/auth/device/validate')) return next(req);
 
   if (req.url.includes('/api/v1/auth/operator-session')) {
     return next(req);
@@ -67,6 +73,8 @@ export const operatorSessionInterceptor: HttpInterceptorFn = (req, next) => {
 async function handlePosUnauthorized(path: string, operatorSession: OperatorSessionService): Promise<void> {
   operatorSession.clearSession();
   if (typeof window === 'undefined' || !path.startsWith('/pos/')) return;
+  if (path.startsWith('/pos/setup')) return;
+  if (sessionStorage.getItem('pos_recovery_redirecting') === '1') return;
 
   sessionStorage.setItem('pos_recovery_redirecting', '1');
 

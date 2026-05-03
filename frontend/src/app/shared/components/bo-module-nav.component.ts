@@ -1,18 +1,29 @@
 import { CommonModule } from '@angular/common';
-import { Component, ElementRef, HostListener } from '@angular/core';
-import { Router, RouterLink, RouterLinkActive } from '@angular/router';
+import { Component, HostListener, OnDestroy } from '@angular/core';
+import { NavigationEnd, Router, RouterLink, RouterLinkActive } from '@angular/router';
+import { Subscription, filter } from 'rxjs';
 import { AuthJwtService } from '../../core/services/auth-jwt.service';
 import { BoAuthService } from '../../core/services/bo-auth.service';
 import { OperatingModeService } from '../../core/services/operating-mode.service';
 import { OperatorSessionService } from '../../core/services/operator-session.service';
 
-type GroupKey = 'operacion' | 'stock' | 'administracion' | 'mas';
+type GroupKey = 'inicio' | 'comercial' | 'inventario' | 'operacion' | 'administracion' | 'analitica';
 
 type NavItem = {
   label: string;
   link: string;
+  fragment?: string;
   show: boolean;
+  icon: string;
   exact?: boolean;
+};
+
+type NavGroup = {
+  key: GroupKey;
+  label: string;
+  icon: string;
+  show: boolean;
+  items: NavItem[];
 };
 
 @Component({
@@ -20,149 +31,96 @@ type NavItem = {
   selector: 'app-bo-module-nav',
   imports: [CommonModule, RouterLink, RouterLinkActive],
   template: `
-    <nav class="bo-nav">
-      <div class="toolbar">
-        <div class="left-zone">
-          <div class="primary-toolbar">
+    <button
+      type="button"
+      class="mobile-toggle"
+      (click)="toggleSidebar()"
+      aria-label="Abrir menú"
+      title="Abrir menú"
+    >☰</button>
+
+    <button type="button" class="sidebar-backdrop" *ngIf="mobileOpen" (click)="closeMobileMenu()" aria-label="Cerrar menú"></button>
+
+    <aside class="bo-sidebar" [class.collapsed]="sidebarCollapsed" [class.mobile-open]="mobileOpen">
+      <header class="sidebar-head">
+        <strong class="brand" *ngIf="!sidebarCollapsed">Administración</strong>
+        <span class="brand" *ngIf="sidebarCollapsed">BO</span>
+        <button
+          type="button"
+          class="collapse-toggle"
+          (click)="toggleSidebar()"
+          [attr.aria-label]="sidebarCollapsed ? 'Expandir menú' : 'Ocultar menú'"
+          [title]="sidebarCollapsed ? 'Expandir menú' : 'Ocultar menú'"
+        >
+          {{ sidebarCollapsed ? '▸' : '◂' }}
+        </button>
+      </header>
+
+      <nav class="sidebar-menu" aria-label="Navegación administración">
+        <section class="menu-group" *ngFor="let group of navGroups" [class.hidden]="!group.show">
+          <button type="button" class="group-trigger" (click)="toggleGroup(group.key)" [class.open]="isOpen(group.key)">
+            <span class="group-label">
+              <span class="icon">{{ group.icon }}</span>
+              <span class="text" *ngIf="!sidebarCollapsed">{{ group.label }}</span>
+            </span>
+            <span class="chevron" *ngIf="!sidebarCollapsed">{{ isOpen(group.key) ? '▾' : '▸' }}</span>
+          </button>
+
+          <div class="group-items" *ngIf="isOpen(group.key) && !sidebarCollapsed">
             <a
-              *ngFor="let item of primaryItems"
+              *ngFor="let item of group.items"
               [routerLink]="item.link"
-              class="tool-link"
-              routerLinkActive="active-tool-link"
+              [fragment]="item.fragment"
+              class="item-link"
+              routerLinkActive="active-link"
               [routerLinkActiveOptions]="{ exact: item.exact ?? false }"
-              (click)="closeGroups()"
-              >{{ item.label }}</a
+              (click)="onNavigate()"
             >
+              <span class="icon">{{ item.icon }}</span>
+              <span>{{ item.label }}</span>
+            </a>
           </div>
+        </section>
+      </nav>
 
-          <span class="divider" aria-hidden="true"></span>
-
-          <div class="group-toolbar">
-            <div class="menu" *ngIf="operacionItems.length">
-              <button
-                type="button"
-                class="group-trigger"
-                (click)="toggleGroup('operacion')"
-                [class.open]="isOpen('operacion')"
-                [attr.aria-expanded]="isOpen('operacion')"
-                aria-haspopup="menu"
-              >
-                Operación <span class="chevron">v</span>
-              </button>
-              <div class="menu-panel" *ngIf="isOpen('operacion')" role="menu">
-                <a
-                  *ngFor="let item of operacionItems"
-                  [routerLink]="item.link"
-                  routerLinkActive="active-link"
-                  [routerLinkActiveOptions]="{ exact: item.exact ?? false }"
-                  (click)="closeGroups()"
-                  >{{ item.label }}</a
-                >
-              </div>
-            </div>
-
-            <div class="menu" *ngIf="stockItems.length">
-              <button
-                type="button"
-                class="group-trigger"
-                (click)="toggleGroup('stock')"
-                [class.open]="isOpen('stock')"
-                [attr.aria-expanded]="isOpen('stock')"
-                aria-haspopup="menu"
-              >
-                Stock <span class="chevron">v</span>
-              </button>
-              <div class="menu-panel" *ngIf="isOpen('stock')" role="menu">
-                <a
-                  *ngFor="let item of stockItems"
-                  [routerLink]="item.link"
-                  routerLinkActive="active-link"
-                  [routerLinkActiveOptions]="{ exact: item.exact ?? false }"
-                  (click)="closeGroups()"
-                  >{{ item.label }}</a
-                >
-              </div>
-            </div>
-
-            <div class="menu" *ngIf="administracionItems.length">
-              <button
-                type="button"
-                class="group-trigger"
-                (click)="toggleGroup('administracion')"
-                [class.open]="isOpen('administracion')"
-                [attr.aria-expanded]="isOpen('administracion')"
-                aria-haspopup="menu"
-              >
-                Administración <span class="chevron">v</span>
-              </button>
-              <div class="menu-panel" *ngIf="isOpen('administracion')" role="menu">
-                <a
-                  *ngFor="let item of administracionItems"
-                  [routerLink]="item.link"
-                  routerLinkActive="active-link"
-                  [routerLinkActiveOptions]="{ exact: item.exact ?? false }"
-                  (click)="closeGroups()"
-                  >{{ item.label }}</a
-                >
-              </div>
-            </div>
-
-            <div class="menu" *ngIf="masItems.length">
-              <button
-                type="button"
-                class="group-trigger"
-                (click)="toggleGroup('mas')"
-                [class.open]="isOpen('mas')"
-                [attr.aria-expanded]="isOpen('mas')"
-                aria-haspopup="menu"
-              >
-                Más <span class="chevron">v</span>
-              </button>
-              <div class="menu-panel" *ngIf="isOpen('mas')" role="menu">
-                <a
-                  *ngFor="let item of masItems"
-                  [routerLink]="item.link"
-                  routerLinkActive="active-link"
-                  [routerLinkActiveOptions]="{ exact: item.exact ?? false }"
-                  (click)="closeGroups()"
-                  >{{ item.label }}</a
-                >
-              </div>
-            </div>
-          </div>
-        </div>
-
-        <button type="button" class="logout" (click)="logout()">Cerrar sesión</button>
-      </div>
-    </nav>
+      <footer class="sidebar-foot">
+        <button type="button" class="logout" (click)="logout()">
+          <span class="icon">↪</span>
+          <span *ngIf="!sidebarCollapsed">Cerrar sesión</span>
+        </button>
+      </footer>
+    </aside>
   `,
   styles: [
-    `.bo-nav{position:relative;z-index:4}`,
-    `.toolbar{display:flex;justify-content:space-between;align-items:center;gap:12px;padding:10px 12px;border:1px solid #cfe3d8;border-radius:14px;background:rgba(248,253,250,.92);box-shadow:0 8px 18px rgba(31,79,58,.08)}`,
-    `.left-zone{display:flex;gap:10px;align-items:center;flex:1;min-width:0}`,
-    `.primary-toolbar{display:flex;gap:8px;flex-wrap:wrap}`,
-    `.tool-link{text-decoration:none;color:#1c5d45;background:#e8f5ef;border:1px solid #c3dfd0;border-radius:999px;padding:7px 11px;font-size:13px;font-weight:700;transition:all .18s ease}`,
-    `.tool-link:hover{background:#dff2e9}`,
-    `.active-tool-link{background:#cfeadb;border-color:#8ac2a8;color:#144d37}`,
-    `.divider{width:1px;align-self:stretch;background:#d3e6db}`,
-    `.group-toolbar{display:flex;gap:8px;flex-wrap:wrap;align-items:center}`,
-    `.menu{position:relative}`,
-    `.group-trigger{cursor:pointer;color:#225f48;background:#f0f7f3;border:1px solid #cfe3d8;border-radius:999px;padding:7px 11px;font-size:13px;font-weight:700;font-family:inherit;min-height:34px;transition:all .18s ease;display:inline-flex;gap:6px;align-items:center}`,
-    `.group-trigger:hover{background:#e2f2ea}`,
-    `.group-trigger.open{background:#dff2e9;border-color:#8ac2a8;color:#144d37}`,
-    `.group-trigger:focus-visible{outline:none;box-shadow:0 0 0 3px rgba(47,142,103,.2)}`,
-    `.chevron{font-size:11px;line-height:1}`,
-    `.menu-panel{position:absolute;top:calc(100% + 6px);left:0;min-width:220px;display:flex;flex-direction:column;gap:2px;padding:6px;background:#fff;border:1px solid #d8e8df;border-radius:12px;box-shadow:0 12px 24px rgba(20,62,46,.16)}`,
-    `.menu-panel a{text-decoration:none;color:#1e5d45;padding:8px 10px;border-radius:8px;font-size:13px;font-weight:600}`,
-    `.menu-panel a:hover{background:#eff8f3}`,
-    `.menu-panel a.active-link{background:#dff2e9;color:#16543d}`,
-    `.logout{cursor:pointer;color:#8f1d22;background:#fdf2f2;border:1px solid #efc7c9;border-radius:999px;padding:7px 11px;font-size:13px;font-family:inherit;font-weight:700;min-height:34px;white-space:nowrap}`,
-    `.logout:hover{background:#fbdedf}`,
-    `@media (max-width: 1200px){.left-zone{overflow-x:auto;padding-bottom:2px}.left-zone::-webkit-scrollbar{height:6px}.left-zone::-webkit-scrollbar-thumb{background:#cfe3d8;border-radius:999px}}`,
-    `@media (max-width: 900px){.toolbar{align-items:flex-start;flex-direction:column}.left-zone{width:100%;overflow-x:auto}.divider{display:none}.menu-panel{position:fixed;left:16px;right:16px;top:88px;min-width:auto}.logout{align-self:flex-end}}`
+    `:host{display:block}`,
+    `.mobile-toggle{display:none}`,
+    `.sidebar-backdrop{display:none}`,
+    `.bo-sidebar{position:fixed;top:var(--bo-top-offset,31px);left:0;bottom:0;width:252px;z-index:43;background:linear-gradient(180deg,var(--bo-sidebar-bg-alt,#01262a) 0%,var(--bo-sidebar-bg,#001c24) 100%);border-right:1px solid var(--bo-sidebar-border,rgba(99,175,152,.32));display:flex;flex-direction:column;transition:width .2s ease,transform .2s ease}`,
+    `.bo-sidebar.collapsed{width:76px}`,
+    `.sidebar-head{padding:10px 10px;border-bottom:1px solid var(--bo-sidebar-border,rgba(99,175,152,.32));color:var(--bo-sidebar-text,#f2fffb);letter-spacing:.02em;display:flex;align-items:center;justify-content:space-between;min-height:52px}`,
+    `.brand{font-weight:700}`,
+    `.collapse-toggle{width:30px;height:30px;border-radius:8px;border:1px solid var(--bo-sidebar-border,rgba(99,175,152,.32));background:var(--bo-sidebar-surface,#05343a);color:var(--bo-sidebar-text,#f2fffb);cursor:pointer}`,
+    `.collapse-toggle:hover{background:var(--bo-hero-start,#0e4a44)}`,
+    `.sidebar-menu{padding:10px 8px;display:flex;flex-direction:column;gap:8px;overflow:auto}`,
+    `.menu-group.hidden{display:none}`,
+    `.group-trigger{width:100%;border:1px solid transparent;background:transparent;color:var(--bo-sidebar-text-muted,#d5efe6);font-family:inherit;border-radius:10px;cursor:pointer;padding:9px 10px;display:flex;align-items:center;justify-content:space-between}`,
+    `.group-trigger:hover{background:var(--bo-sidebar-hover,rgba(32,150,118,.26))}`,
+    `.group-trigger.open{background:rgba(15,164,127,.24);border-color:var(--bo-sidebar-border,rgba(99,175,152,.32))}`,
+    `.group-label{display:flex;align-items:center;gap:10px;font-weight:700}`,
+    `.icon{display:inline-flex;min-width:18px;justify-content:center}`,
+    `.group-items{display:flex;flex-direction:column;gap:4px;padding:4px 0 2px 8px}`,
+    `.item-link{text-decoration:none;color:var(--bo-sidebar-text,#e6f5f0);padding:8px 10px;border-radius:8px;display:flex;gap:8px;align-items:center;font-size:13px}`,
+    `.item-link:hover{background:var(--bo-sidebar-hover,rgba(32,150,118,.26))}`,
+    `.item-link.active-link{background:var(--bo-sidebar-accent,#0fa47f);color:#fff}`,
+    `.sidebar-foot{margin-top:auto;padding:10px 8px;border-top:1px solid var(--bo-sidebar-border,rgba(99,175,152,.32))}`,
+    `.logout{width:100%;border:1px solid var(--bo-sidebar-border,rgba(99,175,152,.32));background:var(--bo-sidebar-surface,#052f34);color:var(--bo-sidebar-text,#f1faf8);border-radius:10px;min-height:38px;cursor:pointer;display:flex;align-items:center;justify-content:center;gap:8px}`,
+    `.logout:hover{background:var(--bo-hero-end,#0c433f)}`,
+    `@media (max-width: 1024px){.mobile-toggle{display:block;position:fixed;left:12px;top:calc(var(--bo-top-offset,31px) + 8px);z-index:44;width:34px;height:34px;border-radius:8px;border:1px solid var(--bo-sidebar-border,rgba(99,175,152,.32));background:var(--bo-sidebar-surface,#0b4a3d);color:#fff;cursor:pointer}.bo-sidebar{transform:translateX(-100%);width:252px}.bo-sidebar.mobile-open{transform:translateX(0)}.bo-sidebar.collapsed{width:252px}.bo-sidebar .collapse-toggle{display:none}.sidebar-backdrop{display:block;position:fixed;inset:0;background:rgba(6,20,24,.45);z-index:42}}`
   ]
 })
-export class BoModuleNavComponent {
+export class BoModuleNavComponent implements OnDestroy {
+  private readonly sidebarStorageKey = 'bo_sidebar_collapsed';
+  private routeSub: Subscription | null = null;
   modules = {
     tablet: true,
     envases: true,
@@ -174,59 +132,87 @@ export class BoModuleNavComponent {
   canSeeDataFlows = false;
   canSeeOpsFlows = false;
   canSeeAdminFlows = false;
-  openGroup: GroupKey | null = null;
+  openGroup: GroupKey | null = 'inicio';
+  navGroups: NavGroup[] = [];
+  sidebarCollapsed = false;
+  mobileOpen = false;
 
-  primaryItems: NavItem[] = [];
-  operacionItems: NavItem[] = [];
-  stockItems: NavItem[] = [];
-  administracionItems: NavItem[] = [];
-  masItems: NavItem[] = [];
-
-  private buildNavigation(): void {
-    this.primaryItems = this.filterVisible([
-      { label: 'Lo diario', link: '/bo/dashboard-gerencial', show: true, exact: true },
-      { label: 'Reportes', link: '/bo/exportaciones', show: this.modules.reportes },
-      { label: 'Importaciones', link: '/bo/importaciones/unificada', show: this.canSeeDataFlows },
-      { label: 'Checklist', link: '/bo/operacion/checklist', show: this.canSeeOpsFlows }
-    ]);
-
-    this.operacionItems = this.filterVisible([
-      { label: 'Checklist', link: '/bo/operacion/checklist', show: this.canSeeOpsFlows },
-      { label: 'Puesta en marcha', link: '/bo/operacion/puesta-en-marcha', show: this.canSeeOpsFlows },
-      { label: 'Descargas', link: '/bo/operacion/descargas', show: this.canSeeOpsFlows },
-      { label: 'Onboarding', link: '/bo/onboarding', show: this.canSeeOpsFlows }
-    ]);
-
-    this.stockItems = this.filterVisible([
-      { label: 'Panel de stock', link: '/bo/stock', show: true },
-      { label: 'Importacion unificada', link: '/bo/importaciones/unificada', show: this.canSeeDataFlows },
-      { label: 'Ajuste masivo stock', link: '/bo/importaciones/ajuste-masivo-stock', show: this.canSeeDataFlows },
-      { label: 'Importaciones', link: '/bo/importaciones', show: this.canSeeDataFlows },
-      { label: 'Stock inicial', link: '/bo/importaciones/stock-inicial', show: this.canSeeDataFlows },
-      { label: 'Compras manuales', link: '/bo/compras/manuales', show: this.modules.comprasSugeridas },
-      { label: 'Compras sugeridas', link: '/bo/compras/sugeridas', show: this.modules.comprasSugeridas },
-      { label: 'Productos', link: '/bo/productos', show: this.canSeeProducts },
-      { label: 'Totem transición', link: '/bo/totem/transiciones', show: this.canSeeProducts }
-    ]);
-
-    this.administracionItems = this.filterVisible([
-      { label: 'Empresa', link: '/bo/admin/empresa', show: this.canSeeAdminFlows },
-      { label: 'Locales', link: '/bo/admin/locales', show: this.canSeeAdminFlows },
-      { label: 'Branding', link: '/bo/admin/branding', show: this.canSeeAdminFlows }
-    ]);
-
-    this.masItems = this.filterVisible([
-      { label: 'Mapa módulos', link: '/bo/modulos', show: true },
-      { label: 'Capacitación', link: '/bo/capacitacion', show: true },
-      { label: 'Demo', link: '/bo/admin/demo', show: true }
-    ]);
+  private buildGroup(key: GroupKey, label: string, icon: string, items: NavItem[]): NavGroup {
+    const visibleItems = items.filter(item => item.show);
+    return { key, label, icon, show: visibleItems.length > 0, items: visibleItems };
   }
 
-  private filterVisible(items: NavItem[]): NavItem[] {
-    return items.filter(item => item.show);
+  private buildNavigation(): void {
+    this.navGroups = [
+      this.buildGroup('inicio', 'Inicio', '🏠', [
+        { label: 'Panel gerencial', link: '/bo/dashboard-gerencial', icon: '📊', show: true, exact: true }
+      ]),
+      this.buildGroup('comercial', 'Comercial', '💼', [
+        { label: 'Clientes', link: '/bo/clientes', icon: '👥', show: true },
+        { label: 'Proveedores', link: '/bo/proveedores', icon: '🏢', show: true },
+        { label: 'Pendientes transferencia', link: '/bo/pendientes-transferencia', icon: '🔁', show: true }
+      ]),
+      this.buildGroup('inventario', 'Inventario', '📦', [
+        { label: 'Panel de stock', link: '/bo/stock', icon: '📦', show: true },
+        { label: 'Productos', link: '/bo/productos', icon: '🏷️', show: this.canSeeProducts },
+        { label: 'Importación unificada', link: '/bo/importaciones/unificada', icon: '📥', show: this.canSeeDataFlows },
+        { label: 'Ajuste masivo', link: '/bo/importaciones/ajuste-masivo-stock', icon: '🧮', show: this.canSeeDataFlows },
+        { label: 'Stock inicial', link: '/bo/importaciones/stock-inicial', icon: '🧱', show: this.canSeeDataFlows },
+        { label: 'Compras manuales', link: '/bo/compras/manuales', icon: '🛒', show: this.modules.comprasSugeridas },
+        { label: 'Compras sugeridas', link: '/bo/compras/sugeridas', icon: '💡', show: this.modules.comprasSugeridas }
+      ]),
+      this.buildGroup('operacion', 'Operación', '🧭', [
+        { label: 'Checklist', link: '/bo/operacion/checklist', icon: '✅', show: this.canSeeOpsFlows },
+        { label: 'Puesta en marcha', link: '/bo/operacion/puesta-en-marcha', icon: '🚀', show: this.canSeeOpsFlows },
+        { label: 'Descargas', link: '/bo/operacion/descargas', icon: '📁', show: this.canSeeOpsFlows },
+        { label: 'Onboarding', link: '/bo/onboarding', icon: '🧩', show: this.canSeeOpsFlows },
+        { label: 'Kanban', link: '/bo/kanban', icon: '🗂️', show: true },
+        { label: 'RRHH', link: '/bo/rrhh', icon: '🧑‍💼', show: true }
+      ]),
+      this.buildGroup('administracion', 'Administración', '⚙️', [
+        { label: 'Empresa', link: '/bo/admin/empresa', icon: '🏛️', show: this.canSeeAdminFlows },
+        { label: 'Locales', link: '/bo/admin/locales', icon: '🏬', show: this.canSeeAdminFlows },
+        { label: 'Branding', link: '/bo/admin/branding', icon: '🎨', show: this.canSeeAdminFlows },
+        { label: 'Demo', link: '/bo/admin/demo', icon: '🧪', show: this.canSeeAdminFlows }
+      ]),
+      this.buildGroup('analitica', 'Analítica', '📈', [
+        { label: 'Exportaciones', link: '/bo/exportaciones', icon: '📤', show: this.modules.reportes },
+        { label: 'Mapa módulos', link: '/bo/modulos', icon: '🗺️', show: true },
+        { label: 'Capacitación', link: '/bo/capacitacion', icon: '🎓', show: true }
+      ])
+    ];
+  }
+
+  private groupForUrl(url: string): GroupKey {
+    const path = `${url ?? ''}`.toLowerCase();
+    if (path.includes('/bo/clientes') || path.includes('/bo/proveedores') || path.includes('/bo/pendientes-transferencia')) return 'comercial';
+    if (
+      path.includes('/bo/stock') ||
+      path.includes('/bo/productos') ||
+      path.includes('/bo/importaciones') ||
+      path.includes('/bo/compras')
+    ) return 'inventario';
+    if (
+      path.includes('/bo/operacion') ||
+      path.includes('/bo/onboarding') ||
+      path.includes('/bo/kanban') ||
+      path.includes('/bo/rrhh')
+    ) return 'operacion';
+    if (path.includes('/bo/admin/')) return 'administracion';
+    if (path.includes('/bo/exportaciones') || path.includes('/bo/modulos') || path.includes('/bo/capacitacion')) return 'analitica';
+    return 'inicio';
+  }
+
+  private syncOpenGroupWithRoute(): void {
+    this.openGroup = this.groupForUrl(this.router.url);
   }
 
   toggleGroup(group: GroupKey): void {
+    if (this.sidebarCollapsed) {
+      this.sidebarCollapsed = false;
+      this.persistSidebarState();
+      this.applyBodyClasses();
+    }
     this.openGroup = this.openGroup === group ? null : group;
   }
 
@@ -234,19 +220,65 @@ export class BoModuleNavComponent {
     return this.openGroup === group;
   }
 
-  closeGroups(): void {
-    this.openGroup = null;
+  toggleSidebar(): void {
+    if (window.innerWidth <= 1024) {
+      this.mobileOpen = !this.mobileOpen;
+      this.applyBodyClasses();
+      return;
+    }
+    this.sidebarCollapsed = !this.sidebarCollapsed;
+    this.persistSidebarState();
+    this.applyBodyClasses();
+  }
+
+  onNavigate(): void {
+    this.syncOpenGroupWithRoute();
+    if (window.innerWidth <= 1024) {
+      this.mobileOpen = false;
+      this.applyBodyClasses();
+    }
+  }
+
+  closeMobileMenu(): void {
+    this.mobileOpen = false;
+    this.applyBodyClasses();
+  }
+
+  private restoreSidebarState(): void {
+    const raw = localStorage.getItem(this.sidebarStorageKey);
+    this.sidebarCollapsed = raw === '1';
+  }
+
+  private persistSidebarState(): void {
+    localStorage.setItem(this.sidebarStorageKey, this.sidebarCollapsed ? '1' : '0');
+  }
+
+  private applyBodyClasses(): void {
+    document.body.classList.add('bo-sidebar-enabled');
+    document.body.classList.toggle('bo-sidebar-expanded', !this.sidebarCollapsed);
+    document.body.classList.toggle('bo-sidebar-collapsed', this.sidebarCollapsed);
+    document.body.classList.toggle('bo-sidebar-mobile-open', this.mobileOpen);
+  }
+
+  private clearBodyClasses(): void {
+    document.body.classList.remove(
+      'bo-sidebar-enabled',
+      'bo-sidebar-expanded',
+      'bo-sidebar-collapsed',
+      'bo-sidebar-mobile-open'
+    );
   }
 
   @HostListener('document:keydown.escape')
   onEsc(): void {
-    this.closeGroups();
+    this.closeMobileMenu();
   }
 
-  @HostListener('document:click', ['$event'])
-  onDocumentClick(event: Event): void {
-    if (!this.elementRef.nativeElement.contains(event.target as Node)) {
-      this.closeGroups();
+  @HostListener('window:resize')
+  onResize(): void {
+    if (window.innerWidth > 1024 && this.mobileOpen) {
+      this.mobileOpen = false;
+      this.applyBodyClasses();
     }
   }
 
@@ -263,14 +295,24 @@ export class BoModuleNavComponent {
     private readonly boAuth: BoAuthService,
     private readonly operatorSession: OperatorSessionService,
     private readonly authJwt: AuthJwtService,
-    private readonly router: Router,
-    private readonly elementRef: ElementRef<HTMLElement>
+    private readonly router: Router
   ) {
     this.modules = this.operatingMode.getConfig().modules;
     this.canSeeProducts = this.authJwt.hasAnyRole(['Admin', 'Supervisor']);
     this.canSeeDataFlows = this.authJwt.hasAnyRole(['Admin', 'Supervisor', 'Manager']);
     this.canSeeOpsFlows = this.authJwt.hasAnyRole(['Admin', 'Supervisor', 'Manager']);
     this.canSeeAdminFlows = this.authJwt.hasAnyRole(['Admin', 'Supervisor']);
+    this.restoreSidebarState();
     this.buildNavigation();
+    this.syncOpenGroupWithRoute();
+    this.routeSub = this.router.events
+      .pipe(filter((event) => event instanceof NavigationEnd))
+      .subscribe(() => this.syncOpenGroupWithRoute());
+    this.applyBodyClasses();
+  }
+
+  ngOnDestroy(): void {
+    this.routeSub?.unsubscribe();
+    this.clearBodyClasses();
   }
 }

@@ -21,7 +21,7 @@ import { BoModuleNavComponent } from '../shared/components/bo-module-nav.compone
 
       <header class="hero">
         <div class="hero-content">
-          <h1>Dashboard gerencial</h1>
+          <h1>Panel gerencial</h1>
           <p class="hero-subtitle">Resumen de operaciones y métricas clave</p>
         </div>
         <div class="hero-actions">
@@ -220,9 +220,9 @@ import { BoModuleNavComponent } from '../shared/components/bo-module-nav.compone
             <h3>Medios de pago</h3>
           </div>
           <div class="card-body">
-            <div class="bar-chart horizontal">
+        <div class="bar-chart horizontal">
               <div class="bar-item" *ngFor="let p of paymentItems">
-                <span class="bar-label">{{ p.method }}</span>
+                <span class="bar-label">{{ paymentMethodLabel(p.method) }}</span>
                 <div class="bar-track">
                   <div class="bar-fill payment-fill" [style.width.%]="barWidth(p.amount, maxPayments)"></div>
                 </div>
@@ -239,7 +239,7 @@ import { BoModuleNavComponent } from '../shared/components/bo-module-nav.compone
           <div class="card-body">
             <div class="bar-chart horizontal">
               <div class="bar-item" *ngFor="let s of salesByShift">
-                <span class="bar-label">{{ s.shift }}</span>
+                <span class="bar-label">{{ shiftLabel(s.shift) }}</span>
                 <div class="bar-track">
                   <div class="bar-fill shift-fill" [style.width.%]="barWidth(s.totalSales, maxShiftSales)"></div>
                 </div>
@@ -332,7 +332,7 @@ import { BoModuleNavComponent } from '../shared/components/bo-module-nav.compone
           </div>
         </article>
 
-        <article class="table-card">
+        <article class="table-card" id="pendientes-transferencia">
           <div class="card-header">
             <h3>Pendientes transferencia</h3>
           </div>
@@ -413,12 +413,7 @@ import { BoModuleNavComponent } from '../shared/components/bo-module-nav.compone
       overflow: hidden;
     }
 
-    .dashboard-container > app-bo-module-nav {
-      position: relative;
-      z-index: 2;
-      display: block;
-      padding: 0.75rem 2rem 0;
-    }
+    .dashboard-container > app-bo-module-nav { display: block; }
 
     .hero-bg {
       position: absolute;
@@ -426,7 +421,7 @@ import { BoModuleNavComponent } from '../shared/components/bo-module-nav.compone
       left: 0;
       right: 0;
       height: 320px;
-      background: linear-gradient(135deg, #1B4D3E 0%, #234F45 100%);
+      background: linear-gradient(135deg, var(--bo-hero-start, #0e4a44) 0%, var(--bo-hero-end, #0c3c3f) 100%);
       overflow: hidden;
       z-index: 0;
       pointer-events: none;
@@ -442,7 +437,7 @@ import { BoModuleNavComponent } from '../shared/components/bo-module-nav.compone
     .shape-1 {
       width: 400px;
       height: 400px;
-      background: #BFEBF1;
+      background: #80cdb8;
       top: -150px;
       right: -100px;
     }
@@ -450,7 +445,7 @@ import { BoModuleNavComponent } from '../shared/components/bo-module-nav.compone
     .shape-2 {
       width: 300px;
       height: 300px;
-      background: #1B4D3E;
+      background: #0f3a40;
       bottom: -100px;
       left: -50px;
     }
@@ -470,12 +465,12 @@ import { BoModuleNavComponent } from '../shared/components/bo-module-nav.compone
       margin: 0;
       font-size: 1.75rem;
       font-weight: 700;
-      color: #FFFFFF;
+      color: var(--bo-sidebar-text, #FFFFFF);
     }
 
     .hero-subtitle {
       margin: 0.25rem 0 0;
-      color: #BFEBF1;
+      color: var(--bo-sidebar-text-muted, #d5efe6);
       font-size: 0.9375rem;
     }
 
@@ -494,9 +489,9 @@ import { BoModuleNavComponent } from '../shared/components/bo-module-nav.compone
 
     .quick-pill {
       text-decoration: none;
-      color: #1f7f57;
-      background: #e7f4ee;
-      border: 1px solid #c6e5d6;
+      color: var(--bo-sidebar-accent-strong, #0c8f6f);
+      background: #e5f4ef;
+      border: 1px solid #bfe5d8;
       border-radius: 999px;
       padding: 7px 11px;
       font-size: 13px;
@@ -506,7 +501,7 @@ import { BoModuleNavComponent } from '../shared/components/bo-module-nav.compone
     .btn-primary {
       padding: 0.625rem 1rem;
       background: #FFFFFF;
-      color: #1B4D3E;
+      color: #0f3a40;
       border: none;
       border-radius: 10px;
       font-size: 0.875rem;
@@ -534,7 +529,7 @@ import { BoModuleNavComponent } from '../shared/components/bo-module-nav.compone
     .btn-secondary {
       padding: 0.625rem 1rem;
       background: rgba(255, 255, 255, 0.15);
-      color: #FFFFFF;
+      color: var(--bo-sidebar-text, #FFFFFF);
       border: 1px solid rgba(255, 255, 255, 0.3);
       border-radius: 10px;
       font-size: 0.875rem;
@@ -554,7 +549,7 @@ import { BoModuleNavComponent } from '../shared/components/bo-module-nav.compone
     .btn-ghost {
       padding: 0.625rem 1rem;
       background: transparent;
-      color: #BFEBF1;
+      color: var(--bo-sidebar-text-muted, #d5efe6);
       border: none;
       font-size: 0.875rem;
       font-weight: 500;
@@ -566,7 +561,7 @@ import { BoModuleNavComponent } from '../shared/components/bo-module-nav.compone
     }
 
     .btn-ghost:hover:not(:disabled) {
-      color: #FFFFFF;
+      color: var(--bo-sidebar-text, #FFFFFF);
     }
 
     .btn-ghost:disabled {
@@ -585,7 +580,7 @@ import { BoModuleNavComponent } from '../shared/components/bo-module-nav.compone
     .filter-chip {
       padding: 0.5rem 1rem;
       background: rgba(255, 255, 255, 0.1);
-      color: #BFEBF1;
+      color: var(--bo-sidebar-text-muted, #d5efe6);
       border: 1px solid rgba(255, 255, 255, 0.2);
       border-radius: 999px;
       font-size: 0.875rem;
@@ -600,7 +595,7 @@ import { BoModuleNavComponent } from '../shared/components/bo-module-nav.compone
 
     .filter-chip.active {
       background: #FFFFFF;
-      color: #1B4D3E;
+      color: #0f3a40;
       border-color: #FFFFFF;
     }
 
@@ -639,7 +634,7 @@ import { BoModuleNavComponent } from '../shared/components/bo-module-nav.compone
       flex-shrink: 0;
     }
 
-    .kpi-icon.sales { background: #E8F5F4; color: #1B4D3E; }
+    .kpi-icon.sales { background: #e5f4ef; color: #0f3a40; }
     .kpi-icon.tickets { background: #F0FDF4; color: #16A34A; }
     .kpi-icon.avg { background: #FEF3C7; color: #D97706; }
     .kpi-icon.transfer { background: #EFF6FF; color: #2563EB; }
@@ -663,7 +658,7 @@ import { BoModuleNavComponent } from '../shared/components/bo-module-nav.compone
     .kpi-value {
       font-size: 1.375rem;
       font-weight: 700;
-      color: #1B4D3E;
+      color: #0f3a40;
       white-space: nowrap;
       overflow: hidden;
       text-overflow: ellipsis;
@@ -684,7 +679,7 @@ import { BoModuleNavComponent } from '../shared/components/bo-module-nav.compone
       width: 40px;
       height: 40px;
       border: 3px solid #E5E7EB;
-      border-top-color: #1B4D3E;
+      border-top-color: var(--bo-sidebar-accent-strong, #0c8f6f);
       border-radius: 50%;
       animation: spin 1s linear infinite;
     }
@@ -709,6 +704,10 @@ import { BoModuleNavComponent } from '../shared/components/bo-module-nav.compone
       overflow: hidden;
     }
 
+    #pendientes-transferencia {
+      scroll-margin-top: calc(var(--bo-top-offset, 31px) + 64px);
+    }
+
     .card-header {
       padding: 1rem 1.25rem;
       border-bottom: 1px solid #F3F4F6;
@@ -718,7 +717,7 @@ import { BoModuleNavComponent } from '../shared/components/bo-module-nav.compone
       margin: 0;
       font-size: 0.9375rem;
       font-weight: 600;
-      color: #1B4D3E;
+      color: #0f3a40;
     }
 
     .card-body {
@@ -780,7 +779,7 @@ import { BoModuleNavComponent } from '../shared/components/bo-module-nav.compone
       width: auto;
     }
 
-    .sales-fill { background: linear-gradient(180deg, #1B4D3E 0%, #2D6A5A 100%); }
+    .sales-fill { background: linear-gradient(180deg, #0f3a40 0%, #0fa47f 100%); }
     .payment-fill { background: linear-gradient(90deg, #3B82F6 0%, #60A5FA 100%); }
     .shift-fill { background: linear-gradient(90deg, #F59E0B 0%, #FBBF24 100%); }
 
@@ -799,7 +798,7 @@ import { BoModuleNavComponent } from '../shared/components/bo-module-nav.compone
     .bar-value {
       font-size: 0.75rem;
       font-weight: 600;
-      color: #1B4D3E;
+      color: #0f3a40;
     }
 
     .tables-grid {
@@ -1040,6 +1039,26 @@ export class BoDashboardGerencialComponent {
 
   barWidth(v: number, max: number): number {
     return Math.round((Number(v || 0) / Math.max(1, max)) * 100);
+  }
+
+  paymentMethodLabel(method: string): string {
+    const m = `${method ?? ''}`.toLowerCase();
+    if (m === 'cash') return 'Efectivo';
+    if (m === 'card') return 'Tarjeta';
+    if (m === 'transfer') return 'Transferencia';
+    if (m === 'credit') return 'Crédito';
+    if (m === 'accountcredit') return 'Cuenta corriente';
+    return method || '-';
+  }
+
+  // Revertidos: colorFor y percent ya no se usan
+
+  shiftLabel(shift: string): string {
+    const s = `${shift ?? ''}`.toLowerCase();
+    if (s === 'morning') return 'Mañana';
+    if (s === 'afternoon') return 'Tarde';
+    if (s === 'night') return 'Noche';
+    return shift || '-';
   }
 
   setRange(kind: 'today' | '7d' | 'month'): void {

@@ -8,7 +8,6 @@ namespace KodvianSuperMarket.Controllers;
 
 [ApiController]
 [Route("api/v1/customers")]
-[DeviceAuth]
 [OperatorSessionAuth]
 public class CustomersController : ControllerBase
 {
@@ -236,6 +235,7 @@ public class CustomersController : ControllerBase
     }
 
     [HttpPost("{id}/containers/return")]
+    [DeviceAuth]
     public async Task<ActionResult> RegisterContainerReturn(int id, [FromBody] CustomerContainerReturnRequest request)
     {
         var deviceId = (int)HttpContext.Items["DeviceId"]!;

@@ -67,7 +67,9 @@ export class InicioLoginComponent {
     private readonly boAuth: BoAuthService,
     private readonly authJwt: AuthJwtService,
     private readonly operatorSession: OperatorSessionService
-  ) {}
+  ) {
+    sessionStorage.removeItem('bo_recovery_redirecting');
+  }
 
   get hasDeviceToken(): boolean {
     return !!localStorage.getItem('pos_device_token');

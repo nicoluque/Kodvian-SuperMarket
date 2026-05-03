@@ -6,6 +6,8 @@ import { ActivatedRoute, Router, RouterLink } from '@angular/router';
 import { firstValueFrom } from 'rxjs';
 import { BoModuleNavComponent } from './bo-module-nav.component';
 import { BoCustomersPageComponent } from './bo-customers-page.component';
+import { BoSuppliersPageComponent } from './bo-suppliers-page.component';
+import { BoPendingTransfersPageComponent } from './bo-pending-transfers-page.component';
 import { PosModuleNavComponent } from './pos-module-nav.component';
 
 type StockModuleId = 'summary' | 'adjustment' | 'movements' | 'claims' | 'transformations';
@@ -13,7 +15,7 @@ type StockModuleId = 'summary' | 'adjustment' | 'movements' | 'claims' | 'transf
 @Component({
   standalone: true,
   selector: 'app-placeholder-page',
-  imports: [CommonModule, FormsModule, RouterLink, BoModuleNavComponent, BoCustomersPageComponent, PosModuleNavComponent],
+  imports: [CommonModule, FormsModule, RouterLink, BoModuleNavComponent, BoCustomersPageComponent, BoSuppliersPageComponent, BoPendingTransfersPageComponent, PosModuleNavComponent],
   template: `
     <main class="placeholder-wrap" [class.stock-view]="isBo() && boSectionKey() === 'stock'">
       <div class="bg-orb orb-a" *ngIf="isBo() && boSectionKey() === 'stock'"></div>
@@ -840,6 +842,8 @@ type StockModuleId = 'summary' | 'adjustment' | 'movements' | 'claims' | 'transf
       </section>
 
       <app-bo-customers-page *ngIf="isBo() && boSectionKey() === 'clientes'" />
+      <app-bo-suppliers-page *ngIf="isBo() && boSectionKey() === 'proveedores'" />
+      <app-bo-pending-transfers-page *ngIf="isBo() && boSectionKey() === 'pendientes-transferencia'" />
 
       <section *ngIf="isBo() && boSectionKey() === 'reclamos'" style="border:1px solid #ddd;border-radius:8px;padding:12px;display:flex;flex-direction:column;gap:8px">
         <div style="display:flex;gap:8px;flex-wrap:wrap;align-items:center">
@@ -1184,6 +1188,8 @@ export class PlaceholderPageComponent implements OnDestroy {
     if (url.includes('/bo/productos')) return 'productos';
     if (url.includes('/bo/stock')) return 'stock';
     if (url.includes('/bo/clientes')) return 'clientes';
+    if (url.includes('/bo/proveedores')) return 'proveedores';
+    if (url.includes('/bo/pendientes-transferencia')) return 'pendientes-transferencia';
     if (url.includes('/bo/claims')) return 'reclamos';
     if (url.includes('/bo/rrhh')) return 'rrhh';
     if (url.includes('/bo/kanban')) return 'kanban';
@@ -1196,6 +1202,8 @@ export class PlaceholderPageComponent implements OnDestroy {
       if (key === 'productos') return 'Vista operativa minima para altas de catalogo, precios y stock inicial.';
       if (key === 'stock') return 'Vista operativa mínima para control de stock crítico y ajustes.';
       if (key === 'clientes') return 'Vista operativa minima para gestion de clientes y cuenta corriente.';
+      if (key === 'proveedores') return 'Vista operativa minima para altas y mantenimiento de proveedores.';
+      if (key === 'pendientes-transferencia') return 'Vista operativa minima para seguimiento de transferencias pendientes.';
       if (key === 'reclamos') return 'Vista operativa mínima para reclamos y créditos de proveedor.';
       if (key === 'rrhh') return 'Vista operativa minima para fichadas, extras e inconsistencias.';
       if (key === 'kanban') return 'Vista operativa minima para tareas de turno y checklist.';

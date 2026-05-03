@@ -137,7 +137,6 @@ public class PurchasesController : ControllerBase
 
 [ApiController]
 [Route("api/v1/suppliers")]
-[DeviceAuth]
 [OperatorSessionAuth]
 public class SuppliersController : ControllerBase
 {
@@ -202,6 +201,7 @@ public class SuppliersController : ControllerBase
     }
 
     [HttpPost("{supplierId}/returns")]
+    [DeviceAuth]
     public async Task<ActionResult<SupplierReturnResponse>> CreateReturn(int supplierId, [FromBody] SupplierReturnCreateRequest request)
     {
         var deviceId = (int)HttpContext.Items["DeviceId"]!;
@@ -221,6 +221,7 @@ public class SuppliersController : ControllerBase
     }
 
     [HttpPost("{supplierId}/exchanges")]
+    [DeviceAuth]
     public async Task<ActionResult<ExternalExchangeResponse>> CreateExchange(int supplierId, [FromBody] ExternalExchangeCreateRequest request)
     {
         var deviceId = (int)HttpContext.Items["DeviceId"]!;

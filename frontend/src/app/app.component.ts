@@ -38,17 +38,30 @@ import { PosCajaOnlineBannerComponent } from './shared/components/pos-caja-onlin
 export class AppComponent {
   showCajaBanner = false;
   showBoSelector = false;
+  private brandingLoaded = false;
 
   constructor(router: Router, health: HealthService, sync: SyncService, branding: BrandingService, auth: AuthJwtService) {
     health.startPolling(4000);
     sync.start();
-    void branding.load().catch(() => undefined);
 
     this.showCajaBanner = router.url.startsWith('/pos/caja');
     this.showBoSelector = isBackofficeWithSession(router.url, auth.isTokenValid());
+    if (this.showBoSelector && !this.brandingLoaded) {
+      this.brandingLoaded = true;
+      void branding.load().catch(() => {
+        this.brandingLoaded = false;
+      });
+    }
+
     router.events.pipe(filter((e) => e instanceof NavigationEnd)).subscribe(() => {
       this.showCajaBanner = router.url.startsWith('/pos/caja');
       this.showBoSelector = isBackofficeWithSession(router.url, auth.isTokenValid());
+      if (this.showBoSelector && !this.brandingLoaded) {
+        this.brandingLoaded = true;
+        void branding.load().catch(() => {
+          this.brandingLoaded = false;
+        });
+      }
     });
   }
 }

@@ -9,9 +9,9 @@ import { HealthService } from '../../core/services/health.service';
   imports: [NgIf, AsyncPipe, RouterLink],
   template: `
     <div class="banner" [class.offline]="!(health.isOnline$ | async)">
-      <strong>{{ (health.isOnline$ | async) ? 'Online' : 'Offline' }}</strong>
-      <span *ngIf="!(health.isOnline$ | async)">Caja en modo cash-only. Sync pendiente.</span>
-      <a routerLink="/pos/caja/offline-queue">Offline queue</a>
+      <strong>{{ (health.isOnline$ | async) ? 'En línea' : 'Sin conexión' }}</strong>
+      <span *ngIf="!(health.isOnline$ | async)">Caja en modo solo efectivo. Sincronización pendiente.</span>
+      <a routerLink="/pos/caja/offline-queue">Cola sin conexión</a>
     </div>
   `,
   styles: [

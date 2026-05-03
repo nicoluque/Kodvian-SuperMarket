@@ -335,7 +335,7 @@ import { PosModuleNavComponent } from '../../shared/components/pos-module-nav.co
           <input type="number" [(ngModel)]="quickCreatePrice" [disabled]="isBusy" placeholder="0.00" />
         </div>
 
-        <p class="modal-subtitle">Se creara como pendiente para completar en Backoffice.</p>
+        <p class="modal-subtitle">Se creará como pendiente para completar en Administración.</p>
 
         <div class="modal-actions">
           <button class="btn-secondary" [disabled]="isBusy" (click)="quickCreateModal = null">Cancelar</button>

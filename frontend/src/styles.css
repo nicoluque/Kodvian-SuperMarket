@@ -1,14 +1,27 @@
 :root {
-  --brand-primary: #BFEBF1;
+  --bo-sidebar-bg: #001c24;
+  --bo-sidebar-bg-alt: #01262a;
+  --bo-sidebar-surface: #05343a;
+  --bo-sidebar-accent: #0fa47f;
+  --bo-sidebar-accent-strong: #0c8f6f;
+  --bo-sidebar-hover: rgba(32, 150, 118, 0.26);
+  --bo-sidebar-text: #f2fffb;
+  --bo-sidebar-text-muted: #d5efe6;
+  --bo-sidebar-border: rgba(99, 175, 152, 0.32);
+  --bo-hero-start: #0e4a44;
+  --bo-hero-end: #0c3c3f;
+  --bo-top-offset: 31px;
+
+  --brand-primary: var(--bo-sidebar-accent);
   --brand-white: #FFFFFF;
-  --brand-gray: #9EABB1;
-  --brand-dark: #1B4D3E;
+  --brand-gray: #6f8f88;
+  --brand-dark: #0f3a40;
   --brand-success: #28a745;
   --brand-warning: #ffc107;
   --brand-danger: #dc3545;
   --brand-info: #17a2b8;
-  --brand-additional: #a8d8e0;
-  --brand-light: #e9ecef;
+  --brand-additional: #80cdb8;
+  --brand-light: #e6efeb;
   --brand-muted: #6c757d;
 
   --color-primary: var(--brand-primary);
@@ -60,6 +73,40 @@ body {
   font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, sans-serif;
   background-color: var(--bg-light);
   color: var(--text-primary);
+}
+
+/* Payment bar improvements (for Medios de pago chart) */
+/* Revertidos: eliminación de estilos añadidos para barras de pago */
+
+input[type='number'] {
+  appearance: textfield;
+  -moz-appearance: textfield;
+}
+
+input[type='number']::-webkit-outer-spin-button,
+input[type='number']::-webkit-inner-spin-button {
+  -webkit-appearance: none;
+  margin: 0;
+}
+
+body.bo-sidebar-enabled main {
+  transition: margin-left 0.2s ease;
+}
+
+body.bo-sidebar-enabled.bo-sidebar-expanded main {
+  margin-left: 252px;
+}
+
+body.bo-sidebar-enabled.bo-sidebar-collapsed main {
+  margin-left: 76px;
+}
+
+@media (max-width: 1024px) {
+  body.bo-sidebar-enabled main,
+  body.bo-sidebar-enabled.bo-sidebar-expanded main,
+  body.bo-sidebar-enabled.bo-sidebar-collapsed main {
+    margin-left: 0;
+  }
 }
 
 html,
@@ -219,3 +266,12 @@ body::-webkit-scrollbar-thumb:hover {
   border-radius: 4px;
   font-size: 0.875rem;
 }
+
+/* Layout fixes for dashboard charts */
+.chart-card { display: flex; flex-direction: column; min-height: 260px; }
+.chart-card .card-body { display: flex; flex: 1 1 auto; }
+.chart-card .bar-chart.horizontal { height: 100%; display: flex; flex-direction: column; }
+.chart-card .bar-item { display: flex; align-items: center; gap: 12px; min-height: 28px; }
+.chart-card .bar-label { white-space: nowrap; overflow: hidden; text-overflow: ellipsis; display: inline-block; max-width: 180px; }
+.chart-card .bar-track { flex: 1 1 auto; height: 16px; background: #f1f5f9; border-radius: 999px; overflow: hidden; }
+.chart-card .bar-fill { height: 100%; border-radius: 999px; }

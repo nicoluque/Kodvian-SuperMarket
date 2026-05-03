@@ -95,7 +95,7 @@ import { OperatorSessionService } from '../core/services/operator-session.servic
               </svg>
             </div>
             <div class="card-content">
-              <h3>Backoffice</h3>
+              <h3>Administración</h3>
               <p>Gestion comercial, compras, stock y reportes</p>
             </div>
             <div class="card-arrow">

@@ -12,7 +12,7 @@ import { PosModuleNavComponent } from '../../shared/components/pos-module-nav.co
   template: `
     <main class="wrap">
       <app-pos-module-nav />
-      <h1>Cola offline</h1>
+      <h1>Cola sin conexión</h1>
       <div class="row">
         <button (click)="reload()">Recargar</button>
         <button (click)="syncNow()">Sincronizar ahora</button>

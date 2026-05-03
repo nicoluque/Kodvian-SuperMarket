@@ -1565,7 +1565,7 @@ export class PosCajaInboxComponent {
   }
 
   shiftLabel(shift: string): string {
-    if (shift === 'Morning') return 'Manana';
+    if (shift === 'Morning') return 'Mañana';
     if (shift === 'Afternoon') return 'Tarde';
     if (shift === 'Night') return 'Noche';
     return shift;
@@ -3596,7 +3596,7 @@ export class PosCajaCobroComponent {
   addPayment(): void {
     if (this.paymentAmount <= 0) return;
     if (!this.health.isOnline && this.paymentMethod !== 'Cash') {
-      this.errorMessage = 'Offline: solo efectivo habilitado';
+      this.errorMessage = 'Sin conexión: solo efectivo habilitado';
       return;
     }
 
@@ -3633,7 +3633,7 @@ export class PosCajaCobroComponent {
     if (!this.health.isOnline) {
       const cashOnly = this.payments.every(p => p.paymentMethod === 'Cash' && !p.isPending);
       if (!cashOnly) {
-        this.errorMessage = 'Offline: solo cobro en efectivo permitido';
+        this.errorMessage = 'Sin conexión: solo cobro en efectivo permitido';
         return;
       }
 
@@ -4886,7 +4886,7 @@ export class PosCajaCierreComponent {
   }
 
   shiftLabel(shift: string): string {
-    if (shift === 'Morning') return 'Manana';
+    if (shift === 'Morning') return 'Mañana';
     if (shift === 'Afternoon') return 'Tarde';
     if (shift === 'Night') return 'Noche';
     return shift;

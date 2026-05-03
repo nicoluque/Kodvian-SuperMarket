@@ -15,7 +15,7 @@ import { OperatorSessionService } from '../../core/services/operator-session.ser
     <div class="status">
       <img *ngIf="logoUrl" [src]="logoUrl" alt="logo" class="logo" />
       <strong>{{ brandName }}</strong>
-      <span class="pill" [class.offline]="!(health.isOnline$ | async)">{{ (health.isOnline$ | async) ? 'En linea' : 'Sin conexion' }}</span>
+      <span class="pill" [class.offline]="!(health.isOnline$ | async)">{{ (health.isOnline$ | async) ? 'En línea' : 'Sin conexión' }}</span>
       <span>tenant: {{ tenantLabel }}</span>
       <span>sucursal: {{ storeLabel }}</span>
       <span *ngIf="boUser">usuario: {{ boUser }}</span>
@@ -25,8 +25,8 @@ import { OperatorSessionService } from '../../core/services/operator-session.ser
     </div>
   `,
   styles: [
-    `.status{position:sticky;top:0;z-index:60;display:flex;gap:10px;align-items:center;padding:6px 12px;background:#eef3f8;border-bottom:1px solid #d4dde8;font-family:Arial,sans-serif;font-size:12px;color:#27313f}`,
-    `.pill{padding:2px 8px;border-radius:999px;background:#dff4e8;color:#1f7f57;font-weight:700}`,
+    `.status{position:sticky;top:0;z-index:60;display:flex;gap:10px;align-items:center;padding:6px 12px;background:#e4f1ed;border-bottom:1px solid #b6d8cc;font-family:Arial,sans-serif;font-size:12px;color:#0f3a40}`,
+    `.pill{padding:2px 8px;border-radius:999px;background:#d8efe7;color:#0c8f6f;font-weight:700}`,
     `.pill.offline{background:#ffe5cf;color:#9e4a18}`,
     `.logo{height:18px;width:18px;object-fit:contain;border-radius:3px}`
   ]

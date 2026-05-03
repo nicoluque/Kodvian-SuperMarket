@@ -44,10 +44,12 @@ export const BO_ROUTES: Routes = [
       { path: 'compras', pathMatch: 'full', redirectTo: 'compras/manuales' },
       { path: 'compras/manuales', component: BoComprasManualesComponent, canActivate: [moduleAccessGuard], data: { module: 'comprasSugeridas' } },
       { path: 'compras/sugeridas', component: BoComprasSugeridasComponent, canActivate: [moduleAccessGuard], data: { module: 'comprasSugeridas' } },
-      { path: 'stock', component: PlaceholderPageComponent, data: { title: 'Backoffice - Stock' } },
+      { path: 'stock', component: PlaceholderPageComponent, data: { title: 'Administración - Stock' } },
       { path: 'totem/transiciones', component: BoTotemTransitionsComponent, canActivate: [backofficeGuard], data: { roles: ['Admin', 'Supervisor'] } },
-      { path: 'claims', component: PlaceholderPageComponent, data: { title: 'Backoffice - Reclamos' } },
-      { path: 'clientes', component: PlaceholderPageComponent, data: { title: 'Backoffice - Clientes' } },
+      { path: 'claims', component: PlaceholderPageComponent, data: { title: 'Administración - Reclamos' } },
+      { path: 'clientes', component: PlaceholderPageComponent, data: { title: 'Administración - Clientes' } },
+      { path: 'proveedores', component: PlaceholderPageComponent, data: { title: 'Administración - Proveedores' } },
+      { path: 'pendientes-transferencia', component: PlaceholderPageComponent, data: { title: 'Administración - Pendientes transferencia' } },
       { path: 'reportes', pathMatch: 'full', redirectTo: 'exportaciones' },
       { path: 'importaciones', component: BoImportacionesComponent },
       { path: 'importaciones/stock-inicial', component: BoImportacionesStockInicialComponent },
@@ -60,8 +62,8 @@ export const BO_ROUTES: Routes = [
       { path: 'exportaciones', component: BoExportacionesComponent, canActivate: [moduleAccessGuard], data: { module: 'reportes' } },
       { path: 'capacitacion', component: BoCapacitacionComponent },
       { path: 'modulos', component: BoModulosComponent },
-      { path: 'rrhh', component: PlaceholderPageComponent, data: { title: 'Backoffice - RRHH' } },
-      { path: 'kanban', component: PlaceholderPageComponent, data: { title: 'Backoffice - Kanban' } },
+      { path: 'rrhh', component: PlaceholderPageComponent, data: { title: 'Administración - RRHH' } },
+      { path: 'kanban', component: PlaceholderPageComponent, data: { title: 'Administración - Kanban' } },
       { path: '', pathMatch: 'full', redirectTo: 'dashboard' }
     ]
   }

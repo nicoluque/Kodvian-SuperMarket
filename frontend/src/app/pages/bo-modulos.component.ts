@@ -19,7 +19,7 @@ import { BoModuleNavComponent } from '../shared/components/bo-module-nav.compone
       <section class="card">
         <h3>Comercial</h3>
         <div class="links">
-          <a routerLink="/bo/dashboard-gerencial">Dashboard gerencial</a>
+          <a routerLink="/bo/dashboard-gerencial">Panel gerencial</a>
           <a routerLink="/bo/compras/manuales">Compras manuales</a>
           <a routerLink="/bo/compras/sugeridas">Compras sugeridas</a>
           <a routerLink="/bo/exportaciones">Exportaciones</a>

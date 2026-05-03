@@ -1,0 +1,44 @@
+[
+  {
+    "Key": "network",
+    "Label": "Red local estable",
+    "Done": false,
+    "UpdatedAt": null
+  },
+  {
+    "Key": "cash_register",
+    "Label": "Caja configurada",
+    "Done": false,
+    "UpdatedAt": null
+  },
+  {
+    "Key": "tablets",
+    "Label": "Tablets asociadas",
+    "Done": false,
+    "UpdatedAt": null
+  },
+  {
+    "Key": "users",
+    "Label": "Usuarios y PIN creados",
+    "Done": false,
+    "UpdatedAt": null
+  },
+  {
+    "Key": "settings",
+    "Label": "Parametros clave cargados",
+    "Done": false,
+    "UpdatedAt": null
+  },
+  {
+    "Key": "exports",
+    "Label": "Manual y catalogo descargados",
+    "Done": false,
+    "UpdatedAt": null
+  },
+  {
+    "Key": "tests",
+    "Label": "Pruebas operativas completas",
+    "Done": false,
+    "UpdatedAt": null
+  }
+]

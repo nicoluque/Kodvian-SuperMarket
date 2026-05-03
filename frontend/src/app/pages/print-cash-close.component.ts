@@ -13,7 +13,7 @@ import { PrintService } from '../core/services/print.service';
       <p>Cierre caja #{{ data.cashSessionId }} ({{ shiftLabel(data.shift) }})</p>
       <p>{{ data.closedAt | date:'short' }}</p>
       <hr />
-      <div class="row"><span>Ventas cash</span><strong>{{ data.totalCash | number:'1.2-2' }}</strong></div>
+      <div class="row"><span>Ventas efectivo</span><strong>{{ data.totalCash | number:'1.2-2' }}</strong></div>
       <div class="row"><span>Ventas tarjeta</span><strong>{{ data.totalCard | number:'1.2-2' }}</strong></div>
       <div class="row"><span>Ventas transferencia</span><strong>{{ data.totalTransfer | number:'1.2-2' }}</strong></div>
       <div class="row"><span>Ventas cuenta corriente</span><strong>{{ data.totalCredit | number:'1.2-2' }}</strong></div>
@@ -38,7 +38,7 @@ export class PrintCashCloseComponent {
     if (autoPrint) setTimeout(() => window.print(), 50);
   }
   shiftLabel(shift: string): string {
-    if (shift === 'Morning') return 'Manana';
+    if (shift === 'Morning') return 'Mañana';
     if (shift === 'Afternoon') return 'Tarde';
     if (shift === 'Night') return 'Noche';
     return shift;

@@ -63,7 +63,7 @@ export class BrandingService {
     document.documentElement.style.setProperty('--brand-primary', branding.primaryColor || '#1f7f57');
     document.documentElement.style.setProperty('--brand-secondary', branding.secondaryColor || '#27313f');
     if (branding.displayName) {
-      document.title = `${branding.displayName} - Backoffice`;
+      document.title = `${branding.displayName} - Administración`;
     }
   }
 }

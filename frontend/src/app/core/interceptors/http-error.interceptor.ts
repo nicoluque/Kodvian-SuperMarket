@@ -25,8 +25,14 @@ export const httpErrorInterceptor: HttpInterceptorFn = (req, next) => {
         && sessionStorage.getItem('pos_recovery_redirecting') === '1'
         && currentPath.startsWith('/pos/')
         && error.status === 401;
+      const isBoUnauthorized = currentPath.startsWith('/bo/') && error.status === 401;
 
       if (isSetupAuthNoise || isOfflineSyncAuthNoise || isAutoRecoveryRedirect) {
+        return throwError(() => error);
+      }
+
+      if (isBoUnauthorized) {
+        handleBoUnauthorized(currentPath);
         return throwError(() => error);
       }
 
@@ -40,6 +46,23 @@ export const httpErrorInterceptor: HttpInterceptorFn = (req, next) => {
     })
   );
 };
+
+function handleBoUnauthorized(currentPath: string): void {
+  if (typeof window === 'undefined') return;
+  if (sessionStorage.getItem('bo_recovery_redirecting') === '1') return;
+
+  sessionStorage.setItem('bo_recovery_redirecting', '1');
+  localStorage.removeItem('bo_jwt');
+  localStorage.removeItem('bo_role');
+  localStorage.removeItem('bo_username');
+  localStorage.removeItem('bo_expires_at');
+  localStorage.removeItem('bo_active_store_id');
+  localStorage.removeItem('bo_active_tenant_id');
+
+  if (!currentPath.startsWith('/inicio/login')) {
+    window.location.assign('/inicio/login?reason=session-expired&source=bo');
+  }
+}
 
 function mapFriendlyMessage(status: number, code: string, fallback: string, url: string, details?: unknown): string {
   const translatedFallback = translateKnownEnglish(fallback);

@@ -192,7 +192,12 @@ Step "Attempt cash close (accept blocked-by-tasks as valid behavior)" {
     if (-not $payload) { throw "Close failed with non-json payload" }
 
     $msg = "$($payload.message)"
-    if ($msg -notlike "*required tasks*" -and $msg -notlike "*pending*") {
+    if (
+      $msg -notlike "*required tasks*" -and
+      $msg -notlike "*pending*" -and
+      $msg -notlike "*tareas obligatorias pendientes*" -and
+      $msg -notlike "*tareas pendientes*"
+    ) {
       throw "Close failed for an unexpected business reason: $msg"
     }
 

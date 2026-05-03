@@ -22,7 +22,7 @@ import { BrandingService } from '../core/services/branding.service';
           <img *ngIf="logoUrl" [src]="logoUrl" alt="logo" class="brand-logo" />
           <div class="brand-info">
             <h1>{{ displayName }}</h1>
-            <span>Backoffice</span>
+            <span>Administración</span>
           </div>
         </div>
 
@@ -422,7 +422,7 @@ export class BoLoginComponent {
     void this.loadBranding();
     const reason = this.route.snapshot.queryParamMap.get('reason');
     if (reason === 'forbidden-role') {
-      this.error = 'Tu rol no tiene acceso al Backoffice. Ingresá por POS con tu usuario de operador.';
+      this.error = 'Tu rol no tiene acceso a Administración. Ingresá por POS con tu usuario de operador.';
     }
 
     const role = this.auth.getRole();
@@ -432,7 +432,7 @@ export class BoLoginComponent {
     }
 
     if (!this.error && this.auth.isTokenValid() && role && !this.allowedBoRoles.includes(role)) {
-      this.error = 'Tenés una sesion activa de operador sin acceso a Backoffice. Volvé al inicio operativo.';
+      this.error = 'Tenés una sesión activa de operador sin acceso a Administración. Volvé al inicio operativo.';
     }
   }
 
@@ -473,7 +473,7 @@ export class BoLoginComponent {
       const session = await this.boAuth.boLogin(this.username.trim(), this.password.trim(), this.pin.trim());
       if (!this.allowedBoRoles.includes(session.role)) {
         this.boAuth.logout();
-        this.error = 'Este usuario es Operador y no tiene acceso a Backoffice. Ingresá desde POS.';
+        this.error = 'Este usuario es Operador y no tiene acceso a Administración. Ingresá desde POS.';
         return;
       }
       void this.router.navigateByUrl('/bo/dashboard-gerencial');
